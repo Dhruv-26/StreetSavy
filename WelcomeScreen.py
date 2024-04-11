@@ -11,6 +11,11 @@ from PIL import ImageTk, Image
 from authKey import SECRET_KEY
 from dbConnection import mycursor, connection
 import multiprocessing
+import easyocr
+
+# import matplotlib.pyplot as plt
+# import easyocr
+# from IPython.display import Image
 
 
 def process_video():
@@ -86,8 +91,8 @@ def process_video():
 
 if __name__ == "__main__":
     # Run process_video in a separate process
-    video_process = multiprocessing.Process(target=process_video)
-    video_process.start()
+    # video_process = multiprocessing.Process(target=process_video)
+    # video_process.start()
 
     root = Tk()
     root.title("Welcome Screen")
@@ -125,7 +130,6 @@ if __name__ == "__main__":
     def select_from_camera():
         cam = cv2.VideoCapture(0)
         while True:
-
             _, img = cam.read()
             key = cv2.waitKey(1) & 0xff
             cv2.imshow("Capture License Number", img)
@@ -135,6 +139,11 @@ if __name__ == "__main__":
                 cv2.imwrite("first1.jpg", img)
                 # time.sleep(5)
                 IMAGE_PATH1 = "first1.jpg"
+
+                reader = easyocr.Reader(['en'])
+                output = reader.readtext('/Users/acer/Documents/GitHub/ParkEasePro/first1.jpg')
+                print("OUTPUT>>>>>>>>>>>>>>>>>>>", (output[0])[1])
+
                 my_image1 = ImageTk.PhotoImage(Image.open(IMAGE_PATH1))
                 my_image_label = Label(root, image=my_image1, width=650, height=300)
                 my_image_label.image = my_image1
@@ -216,7 +225,7 @@ if __name__ == "__main__":
             initialdir="E:/Python machine learning projects/ParkingChargeCalc_ML",
             title="Select A File",
             filetypes=(("jpg files", "*.jpg"), ("all files", "*.*")))
-        print(root.filename)
+        print("Root>>>>...",root.filename)
         IMAGE_PATH = root.filename
         my_image = ImageTk.PhotoImage(Image.open(root.filename))
         my_image_label = Label(root, image=my_image, width=650, height=300).place(relx=0.03, rely=0.4)
@@ -228,6 +237,9 @@ if __name__ == "__main__":
 
         url = 'https://api.openalpr.com/v2/recognize_bytes?recognize_vehicle=1&country=us&secret_key=%s' % (SECRET_KEY)
         r = requests.post(url, data=img_base64)
+        reader = easyocr.Reader(['en'])
+        output = reader.readtext('/Users/acer/Documents/GitHub/ParkEasePro/first1.jpg')
+        print("OUTPUT>>>>>>>>>>>>>>>>>>>", (output[0])[1])
 
         data = r.json()
         print(data)
@@ -339,6 +351,6 @@ if __name__ == "__main__":
     root.mainloop()
 
     # Wait for the video_process to finish
-    video_process.join()
+    # video_process.join()
 
 
